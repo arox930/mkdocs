@@ -1,6 +1,8 @@
 # **iaw-practica 13.4 (Aarón García Crisol)**
 # Ansible
 
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Ansible_logo.svg/375px-Ansible_logo.svg.png" />
+
 En esta practica debemos de desplegar mediante Ansible las infraestructuras de la practica 7 y la practica 9.
 
 ## Infraestructura de la practica 7

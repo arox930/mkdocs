@@ -9,17 +9,15 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../practica7/">
       
-      
-        <link rel="next" href="../practica7/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.3">
     
     
       
-        <title>Acerca de mi - My Docs</title>
+        <title>**iaw-practica 13.4 (Aarón García Crisol)** - My Docs</title>
       
     
     
@@ -67,7 +65,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#acerca-de-mi" class="md-skip">
+        <a href="#iaw-practica-134-aaron-garcia-crisol" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Acerca de mi
+              **iaw-practica 13.4 (Aarón García Crisol)**
             
           </span>
         </div>
@@ -201,52 +199,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Acerca de mi
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
         Acerca de mi
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#aaron-garcia-crisol" class="md-nav__link">
-    Aarón García Crisol
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -272,11 +229,21 @@
 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../practica9/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         **iaw-practica 13.4 (Aarón García Crisol)**
       </a>
+      
     </li>
   
 
@@ -301,21 +268,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#aaron-garcia-crisol" class="md-nav__link">
-    Aarón García Crisol
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -329,9 +281,231 @@
                   
 
 
-<h1 id="acerca-de-mi">Acerca de mi</h1>
-<h2 id="aaron-garcia-crisol">Aarón García Crisol</h2>
-<p>Esta es una practica para el módulo de IAW, en esta practica debemos de realizar una página estática con MkDocs</p>
+<h1 id="iaw-practica-134-aaron-garcia-crisol"><strong>iaw-practica 13.4 (Aarón García Crisol)</strong></h1>
+<h1 id="ansible">Ansible</h1>
+<p><img src="https://www.educative.io/cdn-cgi/image/f=auto,fit=contain,w=1200/api/page/5017398770401280/image/download/5607644146958336" /></p>
+<p>En esta practica debemos de desplegar mediante Ansible las infraestructuras de la practica 7 y la practica 9.</p>
+<h2 id="infraestructura-de-la-practica-9">Infraestructura de la practica 9</h2>
+<p>Para ello crearemos un archivo main.yml, el cual irá lanzando los playbooks que tendremos alojados en nuestra carpeta playbook, el contenido tanto de los playbooks como del main.yml es el siguiente:</p>
+<h3 id="playbookbackendyml">playbook/backend.yml</h3>
+<pre><code class="language-yml">---
+- name: Playbook para crear grupo de seguridad e instancia para Backend
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nombre_sg: backend-sg
+    descripcion_sg: grupo de seguridad para Backend
+    nombre_instancia: Backend
+    id_ami: ami-06878d265978313ca
+    tipo_instancia: t2.small
+    key: vockey
+  tasks:
+  - name: Creamos el grupo de seguridad
+    ec2_group:
+      name: &quot;{{ nombre_sg }}&quot;
+      description: &quot;{{ descripcion_sg }}&quot;
+      rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 3306
+        to_port: 3306
+        cidr_ip: 0.0.0.0/0
+  - name: Creamos la instancia
+    ec2_instance:
+      name: &quot;{{ nombre_instancia }}&quot;
+      key_name: &quot;{{ key }}&quot;
+      security_group: &quot;{{ nombre_sg }}&quot;
+      instance_type: &quot;{{ tipo_instancia }}&quot;
+      image_id: &quot;{{ id_ami }}&quot;
+      state: running
+    register: inst
+</code></pre>
+<h3 id="playbookfrontend1yml">playbook/frontend1.yml</h3>
+<pre><code class="language-yml">---
+- name: Playbook para crear grupo de seguridad e instancia para Frontend
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nombre_sg: frontend-sg
+    descripcion_sg: grupo de seguridad para Frontend
+    nombre_instancia: Frontend-01
+    id_ami: ami-06878d265978313ca
+    tipo_instancia: t2.small
+    key: vockey
+  tasks:
+  - name: Creamos el grupo de seguridad
+    ec2_group:
+      name: &quot;{{ nombre_sg }}&quot;
+      description: &quot;{{ descripcion_sg }}&quot;
+      rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+    register: sg
+  - name: Creamos la instancia
+    ec2_instance:
+      name: &quot;{{ nombre_instancia }}&quot;
+      key_name: &quot;{{ key }}&quot;
+      security_group: &quot;{{ nombre_sg }}&quot;
+      instance_type: &quot;{{ tipo_instancia }}&quot;
+      image_id: &quot;{{ id_ami }}&quot;
+      state: running
+    register: inst
+</code></pre>
+<h3 id="playbookfrontend2yml">playbook/frontend2.yml</h3>
+<pre><code class="language-yml">---
+- name: Playbook para crear grupo de seguridad e instancia para Frontend
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nombre_sg: frontend-sg
+    descripcion_sg: grupo de seguridad para Frontend
+    nombre_instancia: Frontend-02
+    id_ami: ami-06878d265978313ca
+    tipo_instancia: t2.small
+    key: vockey
+  tasks:
+  - name: Creamos el grupo de seguridad
+    ec2_group:
+      name: &quot;{{ nombre_sg }}&quot;
+      description: &quot;{{ descripcion_sg }}&quot;
+      rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+    register: sg
+  - name: Creamos la instancia
+    ec2_instance:
+      name: &quot;{{ nombre_instancia }}&quot;
+      key_name: &quot;{{ key }}&quot;
+      security_group: &quot;{{ nombre_sg }}&quot;
+      instance_type: &quot;{{ tipo_instancia }}&quot;
+      image_id: &quot;{{ id_ami }}&quot;
+      state: running
+    register: inst
+</code></pre>
+<h3 id="playbookbalanceadoryml">playbook/balanceador.yml</h3>
+<pre><code class="language-yml">---
+- name: Playbook para crear grupo de seguridad e instancia para Balanceador de Carga
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nombre_sg: balanceador-sg
+    descripcion_sg: grupo de seguridad para Balanceador
+    nombre_instancia: Balanceador
+    id_ami: ami-06878d265978313ca
+    tipo_instancia: t2.small
+    key: vockey
+  tasks:
+  - name: Creamos el grupo de seguridad
+    ec2_group:
+      name: &quot;{{ nombre_sg }}&quot;
+      description: &quot;{{ descripcion_sg }}&quot;
+      rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+    register: sg
+  - name: Creamos la instancia
+    ec2_instance:
+      name: &quot;{{ nombre_instancia }}&quot;
+      key_name: &quot;{{ key }}&quot;
+      security_group: &quot;{{ nombre_sg }}&quot;
+      instance_type: &quot;{{ tipo_instancia }}&quot;
+      image_id: &quot;{{ id_ami }}&quot;
+      state: running
+    register: inst
+  - name: Mostramos el contenido de la variable inst
+    debug:
+      msg: &quot;inst: {{ inst }}&quot;
+  - name: Creamos una IP elástica y la asociar a la instancia
+    ec2_eip:
+      device_id: &quot;{{ inst.instances[0].instance_id }}&quot;
+    register: ip_elas
+  - name: Mostramos cual es nuestra IP elastica
+    debug:
+      msg: &quot;Nuestra IP elástica es: {{ ip_elas.public_ip }}&quot;
+</code></pre>
+<h3 id="playbooknfsyml">playbook/nfs.yml</h3>
+<pre><code class="language-yml">---
+- name: Playbook para crear grupo de seguridad e instancia para NFS
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    nombre_sg: nfs-sg
+    descripcion_sg: grupo de seguridad para NFS
+    nombre_instancia: NFS
+    id_ami: ami-06878d265978313ca
+    tipo_instancia: t2.small
+    key: vockey
+  tasks:
+  - name: Crear un grupo de seguridad
+    ec2_group:
+      name: &quot;{{ nombre_sg }}&quot;
+      description: &quot;{{ descripcion_sg }}&quot;
+      rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 2049
+        to_port: 2049
+        cidr_ip: 0.0.0.0/0
+    register: sg
+  - name: Creamos la instancia
+    ec2_instance:
+      name: &quot;{{ nombre_instancia }}&quot;
+      key_name: &quot;{{ key }}&quot;
+      security_group: &quot;{{ nombre_sg }}&quot;
+      instance_type: &quot;{{ tipo_instancia }}&quot;
+      image_id: &quot;{{ id_ami }}&quot;
+      state: running
+    register: inst
+</code></pre>
+<h3 id="mainyml">main.yml</h3>
+<pre><code class="language-yml">---
+  - import_playbook: ./playbook/backend.yml
+  - import_playbook: ./playbook/frontend1.yml
+  - import_playbook: ./playbook/frontend2.yml
+  - import_playbook: ./playbook/balanceador.yml
+  - import_playbook: ./playbook/nfs.yml
+</code></pre>
 
 
 
